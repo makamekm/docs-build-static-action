@@ -1,0 +1,48 @@
+name: docs-build-action
+
+inputs:
+  revision:
+    required: true
+  src-root:
+    required: true
+  s3-bucket:
+    required: true
+  s3-endpoint:
+    required: true
+  s3-access-key-id:
+    required: true
+  s3-secret-access-key:
+    required: true
+  s3-region:
+    required: true
+  lint-root:
+    default: './_docs-lint'
+  build-root:
+    default: './_docs-build'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 14
+    - run: npm i @doc-tools/docs -g
+      shell: bash
+    - run: yfm -i ${{ inputs.src-root }} -o ${{ inputs.lint-root }}
+      shell: bash
+    - name: build
+      run: |
+        yfm -i ${{ inputs.src-root }} -o ${{ inputs.build-root }} --output-format md --add-map-file --allow-custom-resources
+      shell: bash
+    - name: Upload S3
+      uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311
+      with:
+        args: --exact-timestamps
+      env:
+        DEST_DIR: "rev/${{ inputs.revision }}"
+        SOURCE_DIR: "${{ inputs.build-root }}"
+        AWS_S3_BUCKET: ${{ inputs.s3-bucket }}
+        AWS_S3_ENDPOINT: ${{ inputs.s3-endpoint }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.s3-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.s3-secret-access-key }}
+        AWS_REGION: ${{ inputs.s3-region }}
