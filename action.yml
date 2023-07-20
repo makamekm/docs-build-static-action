@@ -6,20 +6,20 @@ inputs:
     required: true
   src-root:
     required: true
-  s3-bucket:
+  storage-bucket:
     required: true
-  s3-endpoint:
+  storage-endpoint:
     required: true
-  s3-access-key-id:
+  storage-access-key-id:
     required: true
-  s3-secret-access-key:
+  storage-secret-access-key:
     required: true
-  s3-region:
+  storage-region:
     required: true
   lint-root:
-    default: './_docs-lint'
+    default: "./_docs-lint"
   build-root:
-    default: './_docs-build'
+    default: "./_docs-build"
 
 runs:
   using: composite
@@ -42,8 +42,8 @@ runs:
       env:
         DEST_DIR: "rev/${{ inputs.revision }}"
         SOURCE_DIR: "${{ inputs.build-root }}"
-        AWS_S3_BUCKET: ${{ inputs.s3-bucket }}
-        AWS_S3_ENDPOINT: ${{ inputs.s3-endpoint }}
-        AWS_ACCESS_KEY_ID: ${{ inputs.s3-access-key-id }}
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.s3-secret-access-key }}
-        AWS_REGION: ${{ inputs.s3-region }}
+        AWS_S3_BUCKET: ${{ inputs.storage-bucket }}
+        AWS_S3_ENDPOINT: ${{ inputs.storage-endpoint }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.storage-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.storage-secret-access-key }}
+        AWS_REGION: ${{ inputs.storage-region }}
