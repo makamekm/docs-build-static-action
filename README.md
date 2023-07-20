@@ -27,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
-        uses: diplodoc-platform/docs-build-action@master
+        uses: diplodoc-platform/docs-build-action@v1
         with:
           revision: 'pr-${{ github.event.pull_request.number }}'
           src-root: './docs'
