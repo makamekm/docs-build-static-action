@@ -1,4 +1,5 @@
 name: docs-build-action
+description: Build & Upload Docs
 
 inputs:
   revision:
