@@ -4,6 +4,8 @@ description: Build & Upload Docs
 inputs:
   revision:
     required: true
+  project-name:
+    required: true
   src-root:
     required: true
   storage-bucket:
@@ -20,6 +22,8 @@ inputs:
     default: "./_docs-lint"
   build-root:
     default: "./_docs-build"
+  shared-storage-bucket:
+    default: false
 
 runs:
   using: composite
@@ -40,7 +44,7 @@ runs:
       with:
         args: --exact-timestamps
       env:
-        DEST_DIR: "rev/${{ inputs.revision }}"
+        DEST_DIR: "${{ inputs.shared-storage-bucket == 'true' && inputs.project-name + "/" }}rev/${{ inputs.revision }}"
         SOURCE_DIR: "${{ inputs.build-root }}"
         AWS_S3_BUCKET: ${{ inputs.storage-bucket }}
         AWS_S3_ENDPOINT: ${{ inputs.storage-endpoint }}
