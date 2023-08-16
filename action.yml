@@ -44,7 +44,7 @@ runs:
       with:
         args: --exact-timestamps
       env:
-        DEST_DIR: "${{ inputs.shared-storage-bucket == 'true' && inputs.project-name + "/" }}rev/${{ inputs.revision }}"
+        DEST_DIR: "${{ inputs.shared-storage-bucket == true && inputs.project-name + "/" }}rev/${{ inputs.revision }}"
         SOURCE_DIR: "${{ inputs.build-root }}"
         AWS_S3_BUCKET: ${{ inputs.storage-bucket }}
         AWS_S3_ENDPOINT: ${{ inputs.storage-endpoint }}
