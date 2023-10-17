@@ -31,7 +31,7 @@ runs:
   steps:
     - uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 18
     - run: npm i @diplodoc/cli -g
       shell: bash
     - run: yfm -i ${{ inputs.src-root }} -o ${{ inputs.lint-root }}
