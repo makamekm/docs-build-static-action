@@ -1,5 +1,5 @@
 name: docs-build-action
-description: Build & Upload Docs
+description: Build & Upload documentation
 
 inputs:
   revision:
@@ -32,7 +32,7 @@ runs:
     - uses: actions/setup-node@v3
       with:
         node-version: 14
-    - run: npm i @doc-tools/docs -g
+    - run: npm i @diplodoc/cli -g
       shell: bash
     - run: yfm -i ${{ inputs.src-root }} -o ${{ inputs.lint-root }}
       shell: bash
