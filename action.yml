@@ -40,25 +40,30 @@ runs:
       run: |
         yfm -i ${{ inputs.src-root }} -o ${{ inputs.build-root }} --output-format md --add-map-file --allow-custom-resources
       shell: bash
-    - name: Set DEST_DIR
+    - name: Set BUCKET and PREFIX
       shell: bash
       run: |
         if [[ "${{ inputs.storage-bucket }}" =~ "/" ]]; then
-          PARTS=(${${{ inputs.storage-bucket }}//\// })
-          echo "PREFIX=${PARTS[@]:1}/rev/${{ inputs.revision }}" >> $GITHUB_ENV
-          echo "BUCKET=${PARTS[0]}" >> $GITHUB_ENV  
+          echo "Detected complex bucket name"
+        
+          COMPLEX="${{ inputs.storage-bucket }}"
+          PARTS=(${COMPLEX//\// })
+          PREFIX=${PARTS[@]:1}
+        
+          echo "BUCKET=${PARTS[0]}" >> $GITHUB_ENV
+          echo "PREFIX=${PREFIX// //}/rev/${{ inputs.revision }}" >> $GITHUB_ENV
         else
-          echo "PREFIX=rev/${{ inputs.revision }}" >> $GITHUB_ENV
           echo "BUCKET=${{ inputs.storage-bucket }}" >> $GITHUB_ENV
+          echo "PREFIX=rev/${{ inputs.revision }}" >> $GITHUB_ENV
         fi
     - name: Upload S3
       shell: bash
       run: |
         yfm publish \
-          -i ${{ inputs.build-root }} \
-          --endpoint ${{ inputs.storage-endpoint }} \
-          --region ${{ inputs.storage-region }} \
-          --bucket ${{ env.BUCKET }} \
-          --prefix ${{ env.PREFIX }} \
-          --access-key-id ${{ inputs.storage-access-key-id }} \
-          --secret-access-key ${{ inputs.storage-secret-access-key }}
+          -i "${{ inputs.build-root }}" \
+          --endpoint "${{ inputs.storage-endpoint }}" \
+          --region "${{ inputs.storage-region }}" \
+          --bucket "${{ env.BUCKET }}" \
+          --prefix "${{ env.PREFIX }}" \
+          --access-key-id "${{ inputs.storage-access-key-id }}" \
+          --secret-access-key "${{ inputs.storage-secret-access-key }}"
