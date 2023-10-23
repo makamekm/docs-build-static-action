@@ -6,8 +6,6 @@ inputs:
     required: true
   project-name:
     required: true
-  src-root:
-    default: "./"
   storage-bucket:
     required: true
   storage-endpoint:
@@ -18,10 +16,14 @@ inputs:
     required: true
   storage-region:
     required: true
+  src-root:
+    default: "./"
   lint-root:
     default: "./_docs-lint"
   build-root:
     default: "./_docs-build"
+  stage:
+    default: "stable"
   shared-storage-bucket:
     default: false
     type: boolean
@@ -50,10 +52,10 @@ runs:
           PARTS=(${COMPLEX//\// })
           PREFIX=${PARTS[@]:1}
         
-          echo "BUCKET=${PARTS[0]}" >> $GITHUB_ENV
+          echo "BUCKET=${PARTS[0]}-${{ inputs.stage }}" >> $GITHUB_ENV
           echo "PREFIX=${PREFIX// //}/rev/${{ inputs.revision }}" >> $GITHUB_ENV
         else
-          echo "BUCKET=${{ inputs.storage-bucket }}" >> $GITHUB_ENV
+          echo "BUCKET=${{ inputs.storage-bucket }}-${{ inputs.stage }}" >> $GITHUB_ENV
           echo "PREFIX=rev/${{ inputs.revision }}" >> $GITHUB_ENV
         fi
     - name: Upload S3

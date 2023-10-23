@@ -28,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
-        uses: diplodoc-platform/docs-build-action@v1
+        uses: diplodoc-platform/docs-build-action@v2
         with:
           revision: "pr-${{ github.event.pull_request.number }}"
           project-name: ${{ secrets.DIPLODOC_PROJECT_NAME }}
