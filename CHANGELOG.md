@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/diplodoc-platform/docs-build-action/compare/v4.0.0...v3.1.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* return changelog and change release workflow ([8921c37](https://github.com/diplodoc-platform/docs-build-action/commit/8921c37ac52b81133999b00d8a7fdac99e289a4e))
+
 ## 3.1.0
 
 ### Features
