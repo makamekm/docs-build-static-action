@@ -1,109 +1,27 @@
-# Changelog
+## [4.0.0](https://github.com/diplodoc-platform/docs-build-action/compare/v2.0.2...v4.0.0) (2024-01-30)
 
-## 3.1.0
 
-### Features
+### ⚠ BREAKING CHANGES
 
-* PDF generation is supported using [docs2pdf](https://github.com/diplodoc-platform/docs2pdf)
-
-## 3.0.0
+* remove upload logic
 
 ### Features
 
-* the upload logic has been removed from this action and moved to [docs-upload-action](https://github.com/diplodoc-platform/docs-upload-action)
+* add changelog with migration ([eaa6c44](https://github.com/diplodoc-platform/docs-build-action/commit/eaa6c4467b7db251bddb5396e77abb5a67d103bf))
+* add info on how to check for changes in docs ([c8c4a19](https://github.com/diplodoc-platform/docs-build-action/commit/c8c4a193c97bbd4fe3a452815038b47be52cf1db))
+* add pdf generation step ([31560d6](https://github.com/diplodoc-platform/docs-build-action/commit/31560d6946e9808f68d01707bf8d183565b98e6c))
+* remove upload logic ([e9d4044](https://github.com/diplodoc-platform/docs-build-action/commit/e9d40443d269b2bd5c89a1cc33b0ca0ae92f64c8))
 
-### Migration from v2 to v3 action
+## [2.0.2](https://github.com/diplodoc-platform/docs-build-action/compare/v2.0.1...v2.0.2) (2023-10-17)
 
-#### Workflow with docs-build-action@v2
+## [2.0.1](https://github.com/diplodoc-platform/docs-build-action/compare/v2.0.0...v2.0.1) (2023-10-17)
 
-File: `.github/workflow/build.yml`
+## [2.0.0](https://github.com/diplodoc-platform/docs-build-action/compare/v1.2.0...v2.0.0) (2023-10-17)
 
-```yaml
-name: Build
+## [1.2.0](https://github.com/diplodoc-platform/docs-build-action/compare/v1.1.1...v1.2.0) (2023-09-25)
 
-on:
-  pull_request:
 
-jobs:
-  build-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build
-        uses: diplodoc-platform/docs-build-action@v2
-        with:
-          revision: "pr-${{ github.event.pull_request.number }}"
-          project-name: ${{ secrets.DIPLODOC_PROJECT_NAME }}
-          src-root: "./docs"
-          storage-bucket: ${{ secrets.DIPLODOC_STORAGE_BUCKET }}
-          storage-endpoint: ${{ vars.DIPLODOC_STORAGE_ENDPOINT }}
-          storage-access-key-id: ${{ secrets.DIPLODOC_ACCESS_KEY_ID }}
-          storage-secret-access-key: ${{ secrets.DIPLODOC_SECRET_ACCESS_KEY }}
-          storage-region: ${{ vars.DIPLODOC_STORAGE_REGION }}
-```
+### Features
 
-#### Workflow with docs-build-action@v3
-
-File: `.github/workflows/build.yml`
-**Note**: Be careful and approve the start of this workflow for PR from forks if there are no suspicious changes
-
-```yaml
-name: Build
-
-on:
-  pull_request:
-    paths: 'docs/**'
-    types: [opened, synchronize]
-
-jobs:
-  build-docs:
-    runs-on: ubuntu-latest
-    permissions: write-all
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Build
-        uses: diplodoc-platform/docs-build-action@v3
-        with:
-          revision: "pr-${{ github.event.pull_request.number }}"
-          src-root: "./docs"
-```
-
-File: `.github/workflows/post-build.yml`
-**Note**: The configuration with two workflow files allows to run a build for PR from forks. Because `.github/workflows/post-build.yml` workflow will have access to the repository secrets.
-
-```yaml
-name: Upload & Message
-
-on:
-  workflow_run:
-    workflows: [Build]
-    types:
-      - completed
-
-jobs:
-  post-build:
-    permissions: write-all
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload
-        uses: diplodoc-platform/docs-upload-action@v1
-        if: github.event.workflow_run.conclusion == 'success'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          storage-endpoint: ${{ vars.DIPLODOC_STORAGE_ENDPOINT }}
-          storage-region: ${{ vars.DIPLODOC_STORAGE_REGION }}
-          storage-bucket: ${{ vars.DIPLODOC_STORAGE_BUCKET }}
-          storage-access-key-id: ${{ secrets.DIPLODOC_ACCESS_KEY_ID }}
-          storage-secret-access-key: ${{ secrets.DIPLODOC_SECRET_ACCESS_KEY }}
-
-      - name: Comment message
-        uses: diplodoc-platform/docs-message-action@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          project-link: ${{ vars.DIPLODOC_PROJECT_LINK }}
-```
-
+* publish with diplodoc-cli command ([d629728](https://github.com/diplodoc-platform/docs-build-action/commit/d629728185470bba7e6459367c0d0e34543d86ec))
 
