@@ -2,12 +2,10 @@ name: docs-build-static-action
 description: Build documentation
 
 inputs:
-  revision:
-    required: true
   src-root:
     default: "./"
   build-root:
-    default: "./_docs"
+    default: "./_site"
 
 runs:
   using: composite
@@ -15,10 +13,11 @@ runs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
     - run: npm i @diplodoc/cli -g
       shell: bash
-
-    - name: Build _docs
+    - name: Build _site
       id: build-html
       run: |
         set +e
@@ -29,25 +28,6 @@ runs:
         echo "exitcode=$?" >> $GITHUB_OUTPUT
 
       shell: bash
-
-    - name: Save inputs
-      run: |
-        mkdir -p ./inputs
-        echo ${{ inputs.revision }} > ./inputs/revision
-        echo ${{ github.event.number }} > ./inputs/pr-number
-      shell: bash
-    - name: Upload inputs
-      uses: actions/upload-artifact@v3
-      with:
-        name: inputs
-        path: inputs/
-        retention-days: 1
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-html
-        path: ${{ inputs.build-root }}
-        retention-days: 1
     - name: Upload build log
       uses: actions/upload-artifact@v3
       with:
@@ -57,9 +37,10 @@ runs:
     - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        name: github-pages
         path: ${{ inputs.build-root }}
-        retention-days: 1
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
     - name: Exit
       run: |
         exitcode=${{ steps.build-html.outputs.exitcode }}
