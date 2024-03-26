@@ -1,4 +1,4 @@
-# docs-build-action GitHub action
+# docs-build-static-action GitHub action
 
 This GitHub action does two things:
 - Builds project documentation using [@diplodoc/cli](https://github.com/diplodoc-platform/cli).

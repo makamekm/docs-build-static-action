@@ -1,4 +1,4 @@
-name: docs-build-action
+name: docs-build-static-action
 description: Build documentation
 
 inputs:
