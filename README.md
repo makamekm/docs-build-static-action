@@ -6,9 +6,7 @@ This GitHub action does two things:
 
 ## Inputs
 
-- `revision` (required) - The revision or version identifier for the documentation to be built.
 - `src-root` (default: `./`) - The root directory where the source documentation files are located. The action will use this directory as the base location to look for the source files that need to be built.
-- `lint-root` (default: `./_docs-lint`) - The root directory for the linting process. This is an optional parameter, and if not specified, the default value will be used.
 - `build-root` (default: `./_docs-build`) - The root directory for the built documentation. This is an optional parameter, and if not specified, the default value will be used.
 
 ## Usage
@@ -20,13 +18,20 @@ This workflow is triggered every time a pull request is opened or updated.
 name: Build
 
 on:
-  pull_request:
-    types: [closed]
-    branches:    
-      - main
+  workflow_dispatch:
   push:
-    branches:
-      - 'main'
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-docs:
@@ -39,6 +44,5 @@ jobs:
       - name: Build
         uses: diplodoc-platform/docs-build-static-action@v1
         with:
-          revision: "pr-${{ github.event.pull_request.number }}"
           src-root: "./docs"
 ```
