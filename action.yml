@@ -6,10 +6,8 @@ inputs:
     required: true
   src-root:
     default: "./"
-  lint-root:
-    default: "./_docs-lint"
   build-root:
-    default: "./_docs-build"
+    default: "./_docs"
 
 runs:
   using: composite
@@ -20,54 +18,17 @@ runs:
     - run: npm i @diplodoc/cli -g
       shell: bash
 
-    - name: Need pdf generation
-      id: get-pdf-params
-      run: |
-        need_pdf=$(yq -r '.docs-viewer.pdf // false' < ${{ inputs.src-root }}/.yfm)
-        pdf_args=''
-
-        if [[ "$need_pdf" == 'true' ]]; then
-          pdf_args='--single-page'
-        fi
-
-        echo "need_pdf=$need_pdf" >> $GITHUB_OUTPUT
-        echo "pdf_args=$pdf_args" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Build md2html
-      id: build-md2html
+    - name: Build _docs
+      id: build-html
       run: |
         set +e
         set -o pipefail
 
-        yfm -i ${{ inputs.src-root }} -o ${{ inputs.lint-root }} ${{ steps.get-pdf-params.outputs.pdf_args }} | tee './build-html.log'
-
-        echo "exitcode=$?" >> $GITHUB_OUTPUT
-      shell: bash
-    - name: Build md2md
-      id: build-md2md
-      run: |
-        set +e
-        set -o pipefail
-
-        yfm -i ${{ inputs.src-root }} -o ${{ inputs.build-root }} --output-format md --add-map-file --allow-custom-resources | tee './build-md.log'
+        yfm -i ${{ inputs.src-root }} -o ${{ inputs.build-root }} | tee './build.log'
 
         echo "exitcode=$?" >> $GITHUB_OUTPUT
 
       shell: bash
-
-    - name: Run docs2pdf
-      if: steps.get-pdf-params.outputs.need_pdf == 'true'
-      shell: bash
-      run: |
-        set +e
-        set -o pipefail
-
-        npm i @diplodoc/docs2pdf@latest -g
-
-        docs2pdf -i ${{ inputs.lint-root }}
-
-        rsync -r --include='*.pdf' --include='*/' --exclude='*' ${{ inputs.lint-root }}/ ${{ inputs.build-root }}/
 
     - name: Save inputs
       run: |
@@ -84,18 +45,24 @@ runs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: build-output-md
+        name: build-html
         path: ${{ inputs.build-root }}
         retention-days: 1
     - name: Upload build log
       uses: actions/upload-artifact@v3
       with:
         name: build-log-html
-        path: ./build-html.log
+        path: ./build.log
+        retention-days: 1
+    - name: Upload pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        name: github-pages
+        path: ${{ inputs.build-root }}
         retention-days: 1
     - name: Exit
       run: |
-        exitcode=${{ steps.build-md2html.outputs.exitcode }}
+        exitcode=${{ steps.build-html.outputs.exitcode }}
 
         if [ "$exitcode" -eq 0 ]; then
             echo "Build exited successfully."
